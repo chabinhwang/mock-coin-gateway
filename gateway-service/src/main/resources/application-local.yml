@@ -1,0 +1,62 @@
+spring:
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+      database: ${SPRING_DATA_REDIS_DATABASE:0}
+      password: ${SPRING_DATA_REDIS_PASSWORD:}
+      timeout: ${SPRING_DATA_REDIS_TIMEOUT:2s}
+
+management:
+  health:
+    redis:
+      enabled: ${MANAGEMENT_HEALTH_REDIS_ENABLED:true}
+
+mockcoin:
+  security:
+    # Local 반복 로그인/로그아웃 진단 중 gateway Redis rate-limit에 먼저 막히지 않도록 개발 기본값만 완화한다.
+    ip-requests-per-minute: ${GATEWAY_IP_REQUESTS_PER_MINUTE:600}
+    auth-requests-per-window: ${GATEWAY_AUTH_REQUESTS_PER_WINDOW:60}
+    auth-window-seconds: ${GATEWAY_AUTH_WINDOW_SECONDS:60}
+    # Local Granite/브라우저 개발 서버에서 gateway REST API를 호출할 수 있게 localhost origin을 허용한다.
+    cors-allowed-origins:
+      - https://*.apps.tossmini.com
+      - https://*.private-apps.tossmini.com
+      - http://localhost:*
+      - http://127.0.0.1:*
+  websocket:
+    internal-event-token: local-dev-internal-token
+    redis-market-events:
+      enabled: ${GATEWAY_REDIS_MARKET_EVENTS_ENABLED:true}
+    redis-private-events:
+      enabled: ${GATEWAY_REDIS_PRIVATE_EVENTS_ENABLED:true}
+    # Local 개발 한정으로만 localhost origin을 허용한다 (default origin 목록에는 포함하지 않는다).
+    allowed-origin-patterns:
+      - https://*.apps.tossmini.com
+      - https://*.private-apps.tossmini.com
+      - http://localhost:*
+      - http://127.0.0.1:*
+  gateway:
+    auth:
+      denylist-redis-enabled: ${MOCKCOIN_GATEWAY_AUTH_DENYLIST_REDIS_ENABLED:${AUTH_DENYLIST_REDIS_ENABLED:true}}
+    admin:
+      redis-enabled: ${GATEWAY_ADMIN_REDIS_ENABLED:true}
+  admin:
+    enabled: ${GATEWAY_ADMIN_ENABLED:true}
+    username: ${GATEWAY_ADMIN_USERNAME:admin}
+    password: ${GATEWAY_ADMIN_PASSWORD:admin}
+    passkey-enabled: ${GATEWAY_ADMIN_PASSKEY_ENABLED:false}
+    internal-token: local-dev-admin-token
+    user-service-token: local-dev-internal-token
+    trading-service-token: local-dev-internal-token
+    market-service-token: local-dev-internal-token
+    ingestor-service-token: local-dev-internal-token
+    community-service-token: local-dev-internal-token
+    dev-password-bypass-enabled: ${GATEWAY_ADMIN_DEV_PASSWORD_BYPASS_ENABLED:true}
+    webauthn-rp-id: ${GATEWAY_ADMIN_WEBAUTHN_RP_ID:localhost}
+    webauthn-origins: ${GATEWAY_ADMIN_WEBAUTHN_ORIGINS:http://localhost:8080,http://127.0.0.1:8080}
+
+springdoc:
+  # 로컬에서는 /v3/api-docs를 열어 둔다(문서 화면은 server/docs/api/index.html).
+  api-docs:
+    enabled: ${SPRINGDOC_API_DOCS_ENABLED:true}

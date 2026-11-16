@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <title>MockCoin Admin Console</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="components.css">
+</head>
+<body class="admin-page">
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="관리자 콘솔 사이드바">
+      <a class="brand" href="#dashboard" data-tab-target="dashboard" aria-label="MockCoin Admin Console 홈">
+        <img class="brand-logo" src="favicon.png" width="30" height="30" alt="모의코인">
+        <span class="brand-name">MockCoin</span>
+        <span class="brand-tag">ADMIN</span>
+      </a>
+
+      <nav class="nav" aria-label="백오피스 메뉴">
+        <a class="nav-item active" href="#dashboard" data-tab-target="dashboard" aria-current="page">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span>대시보드
+        </a>
+        <a class="nav-item" href="#users" data-tab-target="users">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 5.2a3.2 3.2 0 0 1 0 6.1"/><path d="M17 14.5a5.5 5.5 0 0 1 3.5 4.5"/></svg></span>사용자
+        </a>
+        <a class="nav-item" href="#trading" data-tab-target="trading">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 3 6-7"/><path d="M21 8v4h-4"/></svg></span>거래
+        </a>
+        <a class="nav-item" href="#reset-passes" data-tab-target="reset-passes">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1.2a1.8 1.8 0 0 0 0 3.6V15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1.2a1.8 1.8 0 0 0 0-3.6Z"/><path d="M14 7v10"/></svg></span>초기화권
+        </a>
+        <a class="nav-item" href="#billing" data-tab-target="billing">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 10h18"/><path d="M7 15h4"/></svg></span>결제
+        </a>
+        <a class="nav-item" href="#ranking" data-tab-target="ranking">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v4a5 5 0 0 1-10 0Z"/><path d="M7 5H4.5v1.5A2.5 2.5 0 0 0 7 9"/><path d="M17 5h2.5v1.5A2.5 2.5 0 0 1 17 9"/><path d="M12 13v3"/><path d="M8.5 20h7"/><path d="M10 16h4l-.5 4h-3Z"/></svg></span>랭킹
+        </a>
+        <a class="nav-item" href="#community" data-tab-target="community">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v10H8l-4 4Z"/></svg></span>게시판<span id="nav-report-badge" class="nav-badge hidden" aria-label="검수 대기 신고 대상 수"></span>
+        </a>
+
+        <div class="nav-divider"></div>
+        <div class="nav-section-label">운영</div>
+
+        <a class="nav-item" href="#runtime" data-tab-target="runtime">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8"/></svg></span>런타임
+        </a>
+        <a class="nav-item" href="#raw" data-tab-target="raw">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M13 3v5h5"/><path d="M9 13h6M9 17h4"/></svg></span>원본 데이터
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">v2.6.0 · gateway-console</div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar" aria-label="관리자 콘솔 상단바">
+        <div class="topbar-title">
+          <h1 id="page-title">대시보드</h1>
+          <p id="page-subtitle">오늘의 운영 지표와 핵심 흐름을 한눈에 봅니다</p>
+        </div>
+        <div class="topbar-actions">
+          <span class="session-pill"><span class="dot"></span>세션 활성</span>
+          <div class="operator">
+            <span class="avatar" aria-hidden="true">관</span>
+            <div class="operator-meta">
+              <strong>관리자</strong>
+              <small>게이트웨이 콘솔</small>
+            </div>
+          </div>
+          <button id="refresh-overview" class="ghost-button compact-button" type="button">새로고침</button>
+          <button id="logout-button" class="ghost-button compact-button" type="button">로그아웃</button>
+        </div>
+      </header>
+
+      <main class="content">
+        <div id="status" class="status-banner hidden" role="status" aria-live="polite">
+          <span id="status-message"></span>
+          <button id="status-dismiss" class="status-dismiss" type="button" aria-label="닫기">×</button>
+        </div>
+
+        <!-- ============================ DASHBOARD ============================ -->
+        <section id="panel-dashboard" class="admin-tab-panel active" data-tab-panel="dashboard" aria-label="대시보드">
+          <div id="degraded-banner" class="notice-banner hidden" role="alert"></div>
+          <div class="metrics-grid">
+            <article class="metric-card">
+              <span class="metric-label">총 사용자</span>
+              <strong id="metric-users">—</strong>
+              <small>활성 세션 <span id="metric-active-sessions">—</span></small>
+            </article>
+            <a class="metric-card metric-link" href="#community">
+              <span class="metric-label">검수 대기 신고</span>
+              <strong id="metric-pending-report-targets">—</strong>
+              <small>대상 기준 · 신고 <span id="metric-pending-reports">—</span>건</small>
+            </a>
+            <a class="metric-card metric-link" href="#billing">
+              <span class="metric-label">결제 주문</span>
+              <strong id="metric-payment-orders">—</strong>
+              <small>전체 결제 주문 행</small>
+            </a>
+            <a class="metric-card metric-link" href="#ranking">
+              <span class="metric-label">활성 시즌 랭킹</span>
+              <strong id="metric-rankings">—</strong>
+              <small>활성 시즌 랭킹 행</small>
+            </a>
+          </div>
+          <div class="metrics-grid">
+            <a class="metric-card metric-link" href="#reset-passes">
+              <span class="metric-label">초기화권 원장</span>
+              <strong id="metric-reset-passes">—</strong>
+              <small>관리자 지급 · 구매 지급 행</small>
+            </a>
+            <a class="metric-card metric-link" href="#reset-passes">
+              <span class="metric-label">지갑 초기화 이력</span>
+              <strong id="metric-reset-histories">—</strong>
+              <small>전체 초기화 실행 건수</small>
+            </a>
+            <a class="metric-card metric-link" href="#community">
+              <span class="metric-label">공개 게시글</span>
+              <strong id="metric-published-posts">—</strong>
+              <small>숨김 <span id="metric-hidden-posts">—</span>건</small>
+            </a>
+            <a class="metric-card metric-link" href="#community">
+              <span class="metric-label">공개 댓글</span>
+              <strong id="metric-published-comments">—</strong>
+              <small>숨김 <span id="metric-hidden-comments">—</span>건</small>
+            </a>
+          </div>
+
+          <div class="dashboard-row">
+            <article class="panel-card">
+              <div class="panel-card-head">
+                <h2>최근 가입 사용자</h2>
+                <a class="head-link head-spacer" href="#users">전체 보기</a>
+              </div>
+              <div id="dashboard-users" class="data-table-wrap" aria-live="polite"></div>
+            </article>
+            <article class="panel-card">
+              <div class="panel-card-head">
+                <h2>최근 결제 주문</h2>
+                <a class="head-link head-spacer" href="#billing">전체 보기</a>
+              </div>
+              <div id="dashboard-payments" class="compact-list" aria-live="polite"></div>
+            </article>
+          </div>
+
+          <article class="panel-card">
+            <div class="panel-card-head">
+              <h2>활성 시즌 상위 랭킹</h2>
+              <a class="head-link head-spacer" href="#ranking">시즌 랭킹 보기</a>
+            </div>
+            <div id="dashboard-rankings" class="data-table-wrap" aria-live="polite"></div>
+          </article>
+        </section>
+
+        <!-- ============================ USERS ============================ -->
+        <section id="panel-users" class="admin-tab-panel" data-tab-panel="users" aria-label="사용자">
+          <div id="users-list-view">
+            <article class="panel-card">
+              <div class="panel-card-head">
+                <h2>사용자 검색</h2>
+                <span class="card-flag read head-spacer">조회</span>
+              </div>
+              <div class="panel-card-body">
+                <form id="user-search-form" class="filter-bar">
+                  <label class="field grow">
+                    <span>검색어</span>
+                    <input id="user-search-q" type="search" maxlength="100" placeholder="사용자 ID, 닉네임 일부, tossUserKey" autocomplete="off">
+                  </label>
+                  <div class="form-actions">
+                    <button class="primary-button" type="submit">검색</button>
+                    <button id="user-search-reset" class="secondary-button" type="button">전체</button>
+                  </div>
+                </form>
+                <p class="form-hint">숫자만 입력하면 사용자 ID와도 비교합니다. 이름을 누르면 상세 화면으로 이동합니다.</p>
+              </div>
+              <div id="users-wallet-warning" class="notice-banner inline hidden" role="alert">지갑 정보를 불러오지 못했습니다. 지갑 열은 "확인 불가"로 표시됩니다.</div>
+              <div id="users-table" class="data-table-wrap" aria-live="polite"></div>
+              <div id="users-pager" class="pager"><span data-pager-summary></span><button class="secondary-button compact-button hidden" type="button" data-pager-more>더 보기</button></div>
+            </article>
+          </div>
+
+          <div id="user-detail-view" class="hidden">
+            <div class="detail-header">
+              <a class="back-link" href="#users">← 사용자 목록</a>
+              <h2 id="user-detail-title">사용자</h2>
+              <button id="user-detail-refresh" class="ghost-button compact-button head-spacer" type="button">새로고침</button>
+            </div>
+            <div class="workspace-grid">
+              <article class="panel-card">
+                <div class="panel-card-head"><h2>계정</h2></div>
+                <div id="user-detail-profile" class="detail-grid" aria-live="polite"></div>
+              </article>
+              <article class="panel-card">
+                <div class="panel-card-head">
+                  <h2>지갑</h2>
+                  <button id="user-detail-ensure-wallet" class="secondary-button compact-button head-spacer hidden" type="button">지갑 생성</button>
+                </div>
+                <div id="user-detail-wallet" class="detail-grid" aria-live="polite"></div>
+                <div id="user-detail-positions" class="data-table-wrap" aria-live="polite"></div>
+              </article>
+              <article class="panel-card wide-card">
+                <div class="panel-card-head">
+                  <h2>초기화권 지급</h2>
+                  <span class="card-flag medium head-spacer">쓰기 · 원장 기록</span>
+                </div>
+                <div class="panel-card-body">
+                  <form id="user-detail-grant-form" class="command-form inline">
+                    <label class="field">
+                      <span>수량</span>
+                      <input id="user-detail-grant-quantity" type="number" min="1" max="100" value="1" inputmode="numeric" required>
+                    </label>
+                    <label class="field">
+                      <span>만료 시각 (선택, 한국 시간)</span>
+                      <input id="user-detail-grant-expires" type="datetime-local">
+                    </label>
+                    <div class="form-actions">
+                      <button class="secondary-button warning-button" type="submit">지급</button>
+                    </div>
+                  </form>
+                </div>
+              </article>
+              <article class="panel-card wide-card">
+                <div class="panel-card-head">
+                  <h2>주문 내역</h2>
+                  <select id="user-detail-order-state" class="head-spacer compact-select" aria-label="주문 상태">
+                    <option value="">전체 상태</option>
+                    <option value="wait">wait</option>
+                    <option value="partially_filled">partially_filled</option>
+                    <option value="filled">filled</option>
+                    <option value="cancelled">cancelled</option>
+                    <option value="rejected">rejected</option>
+                  </select>
+                </div>
+                <div id="user-detail-orders" class="data-table-wrap" aria-live="polite"></div>
+                <div id="user-detail-orders-pager" class="pager"><span data-pager-summary></span><button class="secondary-button compact-button hidden" type="button" data-pager-more>더 보기</button></div>
+              </article>
+              <article class="panel-card wide-card">
+                <div class="panel-card-head"><h2>결제 주문</h2></div>
+                <div id="user-detail-payments" class="data-table-wrap" aria-live="polite"></div>
+                <div id="user-detail-payments-pager" class="pager"><span data-pager-summary></span><button class="secondary-button compact-button hidden" type="button" data-pager-more>더 보기</button></div>
+              </article>
+              <article class="panel-card wide-card">
+                <div class="panel-card-head"><h2>초기화권</h2></div>
+                <div id="user-detail-passes" class="data-table-wrap" aria-live="polite"></div>
+                <div id="user-detail-passes-pager" class="pager"><span data-pager-summary></span><button class="secondary-button compact-button hidden" type="button" data-pager-more>더 보기</button></div>
+              </article>
+              <article class="panel-card wide-card">
+                <div class="panel-card-head"><h2>지갑 초기화 이력</h2></div>
+                <div id="user-detail-histories" class="data-table-wrap" aria-live="polite"></div>
+                <div id="user-detail-histories-pager" class="pager"><span data-pager-summary></span><button class="secondary-button compact-button hidden" type="button" data-pager-more>더 보기</button></div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================ TRADING ============================ -->
+        <section id="panel-trading" class="admin-tab-panel" data-tab-panel="trading" aria-label="거래">
+          <article class="panel-card">
+            <div class="panel-card-head">
+              <h2>사용자 주문 내역</h2>
+              <span class="card-flag read head-spacer">조회</span>
+            </div>
+            <div class="panel-card-body">
+              <form id="order-history-form" class="filter-bar">
+                <label class="field">
+                  <span>사용자 ID</span>
+                  <input id="order-user-id" type="number" min="1" inputmode="numeric" placeholder="사용자 ID" required>
+                </label>
+                <label class="field">
+                  <span>상태</span>
+                  <select id="order-state">
+                    <option value="">전체</option>
+                    <option value="wait">wait</option>
+                    <option value="partially_filled">partially_filled</option>
+                    <option value="filled">filled</option>
+                    <option value="cancelled">cancelled</option>
+                    <option value="rejected">rejected</option>
+                  </select>
+                </label>
+                <div class="form-actions">
+                  <button class="primary-button" type="submit">주문 조회</button>
+                </div>
+              </form>
+              <p class="form-hint">사용자를 모르면 사용자 탭에서 검색한 뒤 상세 화면의 주문 내역을 보세요.</p>
+            </div>
+            <div id="orders-table" class="data-table-wrap" aria-live="polite"></div>
+            <div id="orders-pager" class="pager"><span data-pager-summary></span><button class="secondary-button compact-button hidden" type="button" data-pager-more>더 보기</button></div>
+          </article>
+        </section>
+
+        <!-- ============================ RESET PASSES ============================ -->
+        <section id="panel-reset-passes" class="admin-tab-panel" data-tab-panel="reset-passes" aria-label="초기화권">
+          <div class="workspace-grid">
+            <article class="panel-card wide-card">
+              <div class="panel-card-head">
+                <h2>초기화권 지급</h2>
+                <span class="card-flag medium head-spacer">쓰기 · 원장 기록</span>
+              </div>
+              <div class="panel-card-body">
+                <form id="grant-pass-form" class="command-form inline">
+                  <label class="field">
+                    <span>대상 사용자 ID</span>
+                    <input id="grant-user-id" type="number" min="1" inputmode="numeric" placeholder="사용자 ID" required>
+                  </label>
+                  <label class="field">
+                    <span>수량</span>
+                    <input id="grant-quantity" type="number" min="1" max="100" value="1" inputmode="numeric" required>
+                  </label>
+                  <label class="field">
+                    <span>만료 시각 (선택, 한국 시간)</span>
+                    <input id="grant-expires-at" type="datetime-local">
+                  </label>
+                  <div class="form-actions">
+                    <button class="secondary-button warning-button" type="submit">지급</button>
+                  </div>
+                </form>
+              </div>
+            </article>
+            <article class="panel-card wide-card">
+              <div class="panel-card-head">
+                <h2>초기화권 원장</h2>
+                <span class="card-flag read head-spacer">회수는 관리자 지급분만</span>
+              </div>
+              <div class="panel-card-body">
+                <form id="passes-filter-form" class="filter-bar">
+                  <label class="field">
+                    <span>사용자 ID</span>
+                    <input id="passes-filter-user" type="number" min="1" inputmode="numeric" placeholder="전체">
+                  </label>
+                  <label class="field">
+                    <span>지급 출처</span>
+                    <select id="passes-filter-source">
+                      <option value="">전체</option>
+                      <option value="admin_grant">관리자 지급</option>
+                      <option value="purchase">구매</option>
+                    </select>
+                  </label>
+                  <div class="form-actions">
+                    <button class="primary-button" type="submit">적용</button>
+                  </div>
+                </form>
+              </div>
+              <div id="reset-passes-table" class="data-table-wrap" aria-live="polite"></div>
+              <div id="reset-passes-pager" class="pager"><span data-pager-summary></span><button class="secondary-button compact-button hidden" type="button" data-pager-more>더 보기</button></div>
+            </article>
+            <article class="panel-card wide-card">
+              <div class="panel-card-head">
+                <h2>지갑 초기화 이력</h2>
+                <span class="card-flag read head-spacer">조회</span>
+              </div>
+              <div class="panel-card-body">
+                <form id="histories-filter-form" class="filter-bar">
+                  <label class="field">
+                    <span>사용자 ID</span>
+                    <input id="histories-filter-user" type="number" min="1" inputmode="numeric" placeholder="전체">
+                  </label>
+                  <div class="form-actions">
+                    <button class="primary-button" type="submit">적용</button>
+                  </div>
+                </form>
+              </div>
+              <div id="reset-history-table" class="data-table-wrap" aria-live="polite"></div>
+              <div id="reset-history-pager" class="pager"><span data-pager-summary></span><button class="secondary-button compact-button hidden" type="button" data-pager-more>더 보기</button></div>
+            </article>
+          </div>
+        </section>
+
+        <!-- ============================ BILLING ============================ -->
+        <section id="panel-billing" class="admin-tab-panel" data-tab-panel="billing" aria-label="결제">
+          <div class="workspace-grid">
+            <article class="panel-card wide-card">
+              <div class="panel-card-head">
+                <h2>결제 주문</h2>
+                <span class="card-flag medium head-spacer">환불은 환불 가능 주문만</span>
+              </div>
+              <div class="panel-card-body">
+                <form id="payments-filter-form" class="filter-bar">
+                  <label class="field">
+                    <span>사용자 ID</span>
+                    <input id="payments-filter-user" type="number" min="1" inputmode="numeric" placeholder="전체">
+                  </label>
+                  <label class="field">
+                    <span>상태</span>
+                    <select id="payments-filter-status">
+                      <option value="">전체</option>
+                      <option value="pending">pending</option>
+                      <option value="paid">paid</option>
+                      <option value="failed">failed</option>
+                      <option value="cancelled">cancelled</option>
+                      <option value="refund_requested">refund_requested</option>
+                      <option value="refunded">refunded</option>
+                    </select>
+                  </label>
+                  <div class="form-actions">
+                    <button class="primary-button" type="submit">적용</button>
+                  </div>
+                </form>
+              </div>
+              <div id="payment-orders-table" class="data-table-wrap" aria-live="polite"></div>
+              <div id="payment-orders-pager" class="pager"><span data-pager-summary></span><button class="secondary-button compact-button hidden" type="button" data-pager-more>더 보기</button></div>
+            </article>
+            <article class="panel-card">
+              <div class="panel-card-head">
+                <h2>상품 카탈로그</h2>
+                <button id="load-products" class="secondary-button compact-button head-spacer" type="button">새로고침</button>
+              </div>
+              <div id="products-table" class="data-table-wrap" aria-live="polite"></div>
+            </article>
+            <article class="panel-card">
+              <div class="panel-card-head">
+                <h2>IAP 수동 지급</h2>
+                <span class="card-flag medium head-spacer">결제 주문에 없는 Toss 주문용</span>
+              </div>
+              <div class="panel-card-body">
+                <form id="iap-grant-form" class="command-form">
+                  <label class="field">
+                    <span>사용자 ID</span>
+                    <input id="iap-grant-user-id" type="number" min="1" inputmode="numeric" required>
+                  </label>
+                  <label class="field">
+                    <span>Toss 주문 ID</span>
+                    <input id="iap-grant-order-id" type="text" maxlength="200" required>
+                  </label>
+                  <label class="field">
+                    <span>SKU (선택)</span>
+                    <input id="iap-grant-sku" type="text" maxlength="200">
+                  </label>
+                  <label class="field">
+                    <span>구매 토큰 (선택)</span>
+                    <input id="iap-grant-token" type="text" maxlength="500">
+                  </label>
+                  <div class="form-actions">
+                    <button class="secondary-button warning-button" type="submit">지급 재시도</button>
+                  </div>
+                </form>
+                <p class="form-hint">결제 주문 목록에 있는 주문은 행의 "지급 재시도"·"환불" 버튼을 쓰세요.</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- ============================ RANKING ============================ -->
+        <section id="panel-ranking" class="admin-tab-panel" data-tab-panel="ranking" aria-label="랭킹">
+          <div class="workspace-grid">
+            <article class="panel-card wide-card">
+              <div class="panel-card-head">
+                <h2>랭킹 시즌</h2>
+                <button id="load-seasons" class="secondary-button compact-button head-spacer" type="button">새로고침</button>
+              </div>
+              <div id="ranking-seasons-table" class="data-table-wrap" aria-live="polite"></div>
+            </article>
+            <article class="panel-card wide-card">
+              <div class="panel-card-head">
+                <h2 id="season-rankings-title">시즌 랭킹</h2>
+                <span id="season-rankings-total" class="head-meta"></span>
+                <button id="recalculate-season" class="secondary-button warning-button compact-button head-spacer hidden" type="button">랭킹 재계산</button>
+              </div>
+              <div id="season-rankings-table" class="data-table-wrap" aria-live="polite"></div>
+              <div id="season-rankings-pager" class="pager"><span data-pager-summary></span><button class="secondary-button compact-button hidden" type="button" data-pager-more>더 보기</button></div>
+            </article>
+          </div>
+        </section>
+
+        <!-- ============================ COMMUNITY ============================ -->
+        <section id="panel-community" class="admin-tab-panel" data-tab-panel="community" aria-label="게시판">
+          <div class="workspace-grid">
+            <article class="panel-card wide-card">
+              <div class="panel-card-head">
+                <h2>신고 검수</h2>
+                <div class="segmented head-spacer" role="tablist" aria-label="신고 처리 상태">
+                  <button type="button" role="tab" class="segment active" data-report-status="pending" aria-selected="true">검수 대기</button>
+                  <button type="button" role="tab" class="segment" data-report-status="resolved" aria-selected="false">인정</button>
+                  <button type="button" role="tab" class="segment" data-report-status="dismissed" aria-selected="false">기각</button>
+                </div>
+              </div>
+              <p class="form-hint padded">같은 대상의 신고는 한 행으로 묶습니다. 처리하면 그 대상의 대기 신고가 모두 함께 처리되고, 자동 숨김 기준(대기 신고 5건)도 다시 셉니다.</p>
+              <div id="report-targets-table" class="data-table-wrap" aria-live="polite"></div>
+              <div id="report-targets-pager" class="pager"><span data-pager-summary></span><button class="secondary-button compact-button hidden" type="button" data-pager-more>더 보기</button></div>
+            </article>
+            <article id="report-detail-card" class="panel-card wide-card hidden">
+              <div class="panel-card-head">
+                <h2 id="report-detail-title">개별 신고</h2>
+                <button id="report-detail-close" class="ghost-button compact-button head-spacer" type="button">닫기</button>
+              </div>
+              <div id="report-detail-table" class="data-table-wrap" aria-live="polite"></div>
+              <div id="report-detail-pager" class="pager"><span data-pager-summary></span><button class="secondary-button compact-button hidden" type="button" data-pager-more>더 보기</button></div>
+            </article>
+            <article class="panel-card wide-card">
+              <div class="panel-card-head">
+                <h2>콘텐츠</h2>
+                <div class="segmented head-spacer" role="tablist" aria-label="콘텐츠 목록">
+                  <button type="button" role="tab" class="segment active" data-content-list="published-posts" aria-selected="true">공개 게시글</button>
+                  <button type="button" role="tab" class="segment" data-content-list="hidden-posts" aria-selected="false">숨김 게시글</button>
+                  <button type="button" role="tab" class="segment" data-content-list="published-comments" aria-selected="false">공개 댓글</button>
+                  <button type="button" role="tab" class="segment" data-content-list="hidden-comments" aria-selected="false">숨김 댓글</button>
+                </div>
+              </div>
+              <div id="community-content-table" class="data-table-wrap" aria-live="polite"></div>
+              <div id="community-content-pager" class="pager"><span data-pager-summary></span><button class="secondary-button compact-button hidden" type="button" data-pager-more>더 보기</button></div>
+            </article>
+            <article class="panel-card wide-card">
+              <div class="panel-card-head">
+                <h2>ID로 조회</h2>
+                <span class="card-flag read head-spacer">조회 후 조치</span>
+              </div>
+              <div class="panel-card-body">
+                <form id="community-lookup-form" class="filter-bar">
+                  <label class="field">
+                    <span>유형</span>
+                    <select id="community-lookup-kind">
+                      <option value="post">게시글</option>
+                      <option value="comment">댓글</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>ID</span>
+                    <input id="community-lookup-id" type="number" min="1" inputmode="numeric" required>
+                  </label>
+                  <div class="form-actions">
+                    <button class="primary-button" type="submit">조회</button>
+                  </div>
+                </form>
+              </div>
+              <div id="community-detail" class="detail-grid" aria-live="polite"></div>
+              <div id="community-detail-actions" class="panel-card-body action-row hidden"></div>
+            </article>
+          </div>
+        </section>
+
+        <!-- ============================ RUNTIME ============================ -->
+        <section id="panel-runtime" class="admin-tab-panel" data-tab-panel="runtime" aria-label="런타임">
+          <div class="runtime-layout">
+            <div class="runtime-column">
+              <div class="section-title">
+                <h2>런타임 환경 상태</h2>
+              </div>
+              <div id="runtime-list" class="runtime-grid" aria-live="polite"></div>
+            </div>
+            <aside class="operator-panel" aria-label="운영자 노트">
+              <div class="operator-heading">
+                <h2>운영자 노트</h2>
+              </div>
+              <div id="operator-notes" class="notes-list" aria-live="polite"></div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- ============================ RAW ============================ -->
+        <section id="panel-raw" class="admin-tab-panel" data-tab-panel="raw" aria-label="원본 데이터">
+          <div class="log-viewer">
+            <div class="log-heading">
+              <span>대시보드 overview 원본 JSON</span>
+              <button id="load-overview" class="ghost-button compact-button" type="button">다시 불러오기</button>
+            </div>
+            <pre id="overview-output" class="output-box compact-output" tabindex="0">대시보드를 불러오면 원본 JSON이 여기에 표시됩니다.</pre>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-title">
+    <form method="dialog" class="confirm-body">
+      <h2 id="confirm-title">확인</h2>
+      <p id="confirm-message"></p>
+      <dl id="confirm-rows" class="confirm-rows"></dl>
+      <label id="confirm-input-wrap" class="field hidden">
+        <span id="confirm-input-label"></span>
+        <input id="confirm-input" type="number" inputmode="numeric" step="1">
+        <small id="confirm-input-error" class="input-error" role="alert"></small>
+      </label>
+      <div class="confirm-actions">
+        <button id="confirm-cancel" class="secondary-button" type="submit" value="cancel">취소</button>
+        <button id="confirm-accept" class="primary-button" type="button">실행</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="core.js"></script>
+  <script src="community.js"></script>
+  <script src="user-actions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

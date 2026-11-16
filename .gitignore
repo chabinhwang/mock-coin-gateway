@@ -1,0 +1,34 @@
+# macOS / IDE
+.DS_Store
+.idea/
+.vscode/
+*.iml
+.project
+.classpath
+.settings/
+
+# Gradle / build outputs
+.gradle/
+build/
+bin/
+out/
+*.log
+
+# Local credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.jks
+*.keystore
+*.p12
+*.pfx
+
+# Keep the public configuration template
+!gateway-service/src/main/resources/application.yml
+
+# Local assistant state
+.Codex/
+.claude/
+.serena/

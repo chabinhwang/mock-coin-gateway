@@ -1,0 +1,55 @@
+plugins {
+    id 'java-library'
+    id 'java-test-fixtures'
+    alias(libs.plugins.spring.dependency.management)
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:${libs.versions.spring.boot.get()}"
+    }
+}
+
+dependencies {
+    api libs.jackson.annotations
+    api libs.micrometer.core
+    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.1.0'
+    // 공통 예외 어드바이스(SharedApiExceptionHandler)·rate-limit 코어용 — 소비 서비스가 런타임에 제공
+    compileOnly 'org.springframework:spring-web'
+    // NoResourceFoundException(정적 리소스 404) 매핑용 — spring-web이 아니라 spring-webmvc에 있다
+    compileOnly 'org.springframework:spring-webmvc'
+    compileOnly 'org.springframework:spring-context'
+    compileOnly 'org.springframework.data:spring-data-redis'
+    compileOnly 'org.slf4j:slf4j-api'
+    // API 문서 지원(에러 응답·보안 스킴 OperationCustomizer, 응답 봉투 @Schema) — 소비 서비스가 런타임에 제공
+    compileOnly libs.springdoc.openapi.webmvc.api
+    compileOnly 'org.springframework.boot:spring-boot'
+    testImplementation libs.junit.jupiter
+    testImplementation libs.assertj.core
+    testImplementation libs.mockito.core
+    // main이 compileOnly로 두는 의존성은 테스트에서 직접 제공해야 한다.
+    // (소비 서비스가 런타임에 주는 것과 동일한 좌표를 사용한다)
+    testImplementation 'jakarta.servlet:jakarta.servlet-api:6.1.0'
+    testImplementation 'org.springframework:spring-web'
+    testImplementation 'org.springframework:spring-webmvc'
+    testImplementation 'org.springframework:spring-context'
+    testImplementation 'org.springframework:spring-test'
+    testImplementation 'org.springframework.data:spring-data-redis'
+    testImplementation 'org.slf4j:slf4j-api'
+    testImplementation libs.springdoc.openapi.webmvc.api
+    testImplementation 'org.springframework.boot:spring-boot'
+
+    // 서비스 테스트가 공유하는 API 문서 스냅샷·에러 선언 검증 도구 — 소비 서비스 테스트가 런타임에 제공
+    testFixturesCompileOnly libs.springdoc.openapi.webmvc.api
+    testFixturesCompileOnly 'org.springframework:spring-test'
+    testFixturesCompileOnly 'org.springframework:spring-webmvc'
+    testFixturesCompileOnly 'jakarta.servlet:jakarta.servlet-api:6.1.0'
+    testRuntimeOnly 'ch.qos.logback:logback-classic'
+    testRuntimeOnly libs.junit.platform.launcher
+}

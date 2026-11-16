@@ -1,0 +1,152 @@
+plugins {
+    alias(libs.plugins.spring.boot) apply false
+    alias(libs.plugins.spring.dependency.management) apply false
+    id 'jacoco' // 루트에도 적용해야 집계 리포트 태스크가 jacocoClasspath를 얻는다
+}
+
+group = 'com.mockcoin'
+version = '0.1.0-SNAPSHOT'
+
+// 커버리지 측정에서 제외할 클래스 패턴.
+// 실행 진입점·설정 바인딩·순수 DTO/record·JPA repository 인터페이스는 로직이 없어
+// 커버리지를 재도 신호가 아니라 잡음이 된다.
+ext.coverageExcludes = [
+        '**/*Application.class',
+        '**/*Application$*.class',
+        '**/*Properties.class',
+        '**/*Properties$*.class',
+        '**/*Configuration.class',
+        '**/*Configuration$*.class',
+        '**/*Config.class',
+        '**/*Config$*.class',
+        '**/*Repository.class',
+        '**/*Repositories.class',
+        '**/*Repositories$*.class',
+        '**/db/migration/**',
+]
+
+// 모듈별 instruction 커버리지 하한선(ratchet).
+// 실측 baseline보다 조금 낮게 잡아두고, 개선될 때마다 이 값을 올린다.
+// 0.00인 모듈은 아직 baseline을 확정하지 않은 상태로, 리포트만 생성한다.
+// 실측 instruction 커버리지를 baseline으로 삼고, 노이즈 여유를 두어 약 2~3%p 아래로 설정.
+// 커버리지가 올라가면 이 값도 함께 올려서 되돌아가지 않게 한다(ratchet).
+// 여유 폭을 정수 %p로만 끊으면 개선분을 흡수해 하한선이 사실상 느슨해지므로,
+// 직전과 같은 여유 폭(약 2.2~2.4%p)을 유지하도록 소수 자리까지 쓴다.
+//   원본 실측(2026-07-29): gateway 87.89 / shared-kernel 98.68
+ext.coverageFloors = [
+        'shared-kernel'   : 0.98,
+        'gateway-service' : 0.855,
+]
+
+subprojects {
+    group = rootProject.group
+    version = rootProject.version
+
+    apply plugin: 'jacoco'
+
+    jacoco {
+        // Java 25 바이트코드 계측에는 0.8.14 이상이 필요하다.
+        toolVersion = libs.versions.jacoco.get()
+    }
+
+    // jacocoTestReport/jacocoTestCoverageVerification은 java 플러그인이 적용된 뒤에야
+    // 등록되므로, 모듈 build.gradle 평가 이후에 설정한다.
+    plugins.withType(JavaPlugin).configureEach {
+        tasks.withType(Test).configureEach {
+            useJUnitPlatform()
+        }
+        tasks.named('test') {
+            finalizedBy tasks.named('jacocoTestReport')
+        }
+
+        tasks.named('jacocoTestReport') {
+            dependsOn tasks.named('test')
+            reports {
+                xml.required = true   // CI 리포터 연동용
+                html.required = true  // 로컬 확인용
+                csv.required = false
+            }
+            classDirectories.setFrom(files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: rootProject.ext.coverageExcludes)
+            }))
+        }
+
+        tasks.named('jacocoTestCoverageVerification') {
+            dependsOn tasks.named('jacocoTestReport')
+            classDirectories.setFrom(files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: rootProject.ext.coverageExcludes)
+            }))
+            violationRules {
+                rule {
+                    element = 'BUNDLE'
+                    limit {
+                        counter = 'INSTRUCTION'
+                        value = 'COVEREDRATIO'
+                        minimum = (rootProject.ext.coverageFloors[project.name] ?: 0.00) as BigDecimal
+                    }
+                }
+            }
+        }
+
+        tasks.named('check') {
+            dependsOn tasks.named('jacocoTestCoverageVerification')
+        }
+    }
+
+    // Spring Boot 서비스 공통 API 문서 설정.
+    // 명세(OpenAPI JSON)는 서비스 테스트가 서버를 띄우지 않고 MockMvc로 받아 docs/generated/api/<서비스>.json과 비교한다.
+    // - test: 커밋된 명세와 다르면 실패한다.
+    // - generateApiDocs: 명세를 다시 생성해 파일에 쓴다(./scripts/generate-api-docs.sh가 전 서비스에 대해 실행).
+    plugins.withId('org.springframework.boot') {
+        dependencies {
+            implementation libs.springdoc.openapi.webmvc.api
+            testImplementation testFixtures(project(':shared-kernel'))
+        }
+
+        def apiDocsDir = rootProject.layout.projectDirectory.dir('docs/generated/api')
+        def apiDocsFile = apiDocsDir.file("${project.name}.json")
+
+        tasks.withType(Test).configureEach {
+            systemProperty 'mockcoin.apidocs.dir', apiDocsDir.asFile.absolutePath
+            inputs.files(apiDocsFile).withPropertyName('committedApiDocs').withPathSensitivity(PathSensitivity.RELATIVE).optional()
+        }
+
+        tasks.register('generateApiDocs', Test) {
+            group = 'documentation'
+            description = 'API 명세(OpenAPI JSON)를 코드에서 다시 생성해 docs/generated/api에 쓴다.'
+            testClassesDirs = sourceSets.test.output.classesDirs
+            classpath = sourceSets.test.runtimeClasspath
+            useJUnitPlatform {
+                includeTags 'api-docs-snapshot'
+            }
+            systemProperty 'mockcoin.apidocs.update', 'true'
+            outputs.upToDateWhen { false }
+        }
+    }
+}
+
+// 전 모듈 커버리지를 하나의 리포트로 합친다: ./gradlew jacocoAggregatedReport
+tasks.register('jacocoAggregatedReport', JacocoReport) {
+    group = 'verification'
+    description = '전 모듈 테스트 커버리지를 단일 리포트로 집계한다.'
+
+    def javaSubprojects = subprojects.findAll { it.plugins.hasPlugin(JavaPlugin) }
+    dependsOn javaSubprojects.collect { it.tasks.named('test') }
+
+    sourceDirectories.setFrom(files(javaSubprojects.collect { it.sourceSets.main.allSource.srcDirs }))
+    classDirectories.setFrom(files(javaSubprojects.collect {
+        fileTree(dir: it.sourceSets.main.output.classesDirs.asPath, exclude: rootProject.ext.coverageExcludes)
+    }))
+    // 태스크 실행 시점에 존재하는 exec 파일만 모은다(설정 시점에는 아직 없다).
+    executionData.setFrom(fileTree(rootDir) {
+        include '*/build/jacoco/test.exec'
+    })
+
+    reports {
+        xml.required = true
+        xml.outputLocation = layout.buildDirectory.file('reports/jacoco/aggregated/jacocoAggregated.xml')
+        html.required = true
+        html.outputLocation = layout.buildDirectory.dir('reports/jacoco/aggregated/html')
+        csv.required = false
+    }
+}

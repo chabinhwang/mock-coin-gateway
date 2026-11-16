@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <title>MockCoin Admin Login</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="login-page">
+  <main class="login-shell">
+    <section class="login-hero" aria-label="MockCoin Admin Login 소개">
+      <a class="brand-mark login-brand" href="login.html" aria-label="MockCoin Admin Login 홈">
+        <img class="brand-symbol" src="favicon.png" width="40" height="40" alt="모의코인">
+        <span>
+          <strong>MockCoin Admin</strong>
+          <small>Gateway protected console</small>
+        </span>
+      </a>
+
+      <div class="login-hero-copy">
+        <p class="eyebrow">Secure Operator Access</p>
+        <h1>게이트웨이 관리자 세션으로 운영 콘솔에 접근합니다.</h1>
+        <span class="hero-rule" aria-hidden="true"></span>
+      </div>
+
+      <div class="security-rail" aria-label="보안 단계">
+        <span>Session guarded</span>
+        <span>Password protected</span>
+        <span>Same-origin protected environment</span>
+      </div>
+    </section>
+
+    <section class="login-stage" aria-label="관리자 인증 영역">
+      <div class="login-glow" aria-hidden="true"></div>
+      <section class="login-card" aria-label="관리자 로그인 폼">
+        <div class="login-card-heading">
+          <h2>Authentication</h2>
+          <p class="muted">Enter your administrative credentials to proceed.</p>
+        </div>
+
+        <form id="password-section" class="login-section hidden">
+          <label>
+            <span>Administrator ID</span>
+            <input id="username" autocomplete="username" placeholder="e.g. sysadmin_01">
+          </label>
+          <label>
+            <span>Access Token / Password</span>
+            <input id="password" autocomplete="current-password" type="password" placeholder="••••••••••••••••">
+          </label>
+          <p id="login-error" class="error-text hidden" role="alert"></p>
+          <button id="password-login" class="primary-button" type="submit">로그인</button>
+        </form>
+
+        <section id="passkey-section" class="login-section hidden">
+          <div class="passkey-card">
+            <strong>Passkey 인증 준비 완료</strong>
+            <span>등록된 보안 키 또는 기기 생체 인증으로 관리자 세션을 생성합니다.</span>
+          </div>
+          <button id="passkey-login" class="secondary-button passkey-button" type="button">Passkey로 로그인</button>
+        </section>
+
+        <section id="register-section" class="login-section hidden">
+          <div class="passkey-card">
+            <strong>Passkey 등록 필요</strong>
+            <span>Passkey를 등록하면 다음부터는 Passkey 로그인을 사용합니다. 등록된 Passkey 교체는 Passkey로 로그인한 관리자 세션에서만 수행하세요.</span>
+          </div>
+          <p id="register-error" class="error-text hidden" role="alert"></p>
+          <button id="register-passkey" class="secondary-button passkey-button" type="button">Passkey 등록</button>
+        </section>
+
+        <section id="locked-section" class="login-section hidden">
+          <div class="locked-card">
+            <strong>접근이 일시 제한되었습니다.</strong>
+            <span>로그인 시도 횟수를 초과했습니다. 잠시 후 다시 시도해주세요.</span>
+          </div>
+        </section>
+
+        <div class="secure-divider" aria-hidden="true"><span>Secure Alternate</span></div>
+        <p class="login-footnote">© 2024 MockCoin Operations. All activity is logged.</p>
+      </section>
+    </section>
+  </main>
+  <script src="login.js"></script>
+</body>
+</html>

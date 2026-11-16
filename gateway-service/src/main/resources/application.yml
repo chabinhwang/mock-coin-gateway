@@ -1,0 +1,101 @@
+spring:
+  application:
+    name: gateway-service
+  threads:
+    virtual:
+      enabled: ${SPRING_THREADS_VIRTUAL_ENABLED:true}
+
+server:
+  port: ${SERVER_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:health,info,prometheus}
+  tracing:
+    sampling:
+      # trace/span id는 서비스 간 로그 상관관계용으로만 쓰고 별도 trace backend로 export하지
+      # 않는다. 샘플링에서 빠진 요청은 로그를 이어볼 수 없으므로 전량(1.0) 기록한다.
+      probability: ${MANAGEMENT_TRACING_SAMPLING_PROBABILITY:1.0}
+
+mockcoin:
+  routes:
+    user-service: ${USER_SERVICE_BASE_URL:http://localhost:8085}
+    trading-service: ${TRADING_SERVICE_BASE_URL:http://localhost:8082}
+    market-service: ${MARKET_SERVICE_BASE_URL:http://localhost:8083}
+    ingestor-service: ${INGESTOR_SERVICE_BASE_URL:http://localhost:8084}
+    community-service: ${COMMUNITY_SERVICE_BASE_URL:http://localhost:8086}
+  http:
+    connect-timeout: ${GATEWAY_HTTP_CONNECT_TIMEOUT:1s}
+    read-timeout: ${GATEWAY_HTTP_READ_TIMEOUT:8s}
+  websocket:
+    auth-timeout-seconds: ${GATEWAY_WS_AUTH_TIMEOUT_SECONDS:30}
+    max-message-bytes: ${GATEWAY_WS_MAX_MESSAGE_BYTES:4096}
+    internal-event-token: ${GATEWAY_INTERNAL_EVENT_TOKEN:${MOCKCOIN_GATEWAY_INTERNAL_EVENT_TOKEN:}}
+    # RN 미니앱 WebSocket은 Origin을 https://<API 호스트>로 보내고, TLS가 앞단에서 끝나 same-origin으로도 인정되지 않는다.
+    # 배포 환경은 이 env에 API 호스트 origin을 추가해야 토스 앱의 /ws 핸드셰이크가 403으로 거절되지 않는다(쉼표 구분).
+    allowed-origin-patterns: ${GATEWAY_WS_ALLOWED_ORIGIN_PATTERNS:https://*.apps.tossmini.com,https://*.private-apps.tossmini.com}
+    ping-interval-seconds: ${GATEWAY_WS_PING_INTERVAL_SECONDS:30}
+    pong-timeout-seconds: ${GATEWAY_WS_PONG_TIMEOUT_SECONDS:10}
+    heartbeat-check-interval-millis: ${GATEWAY_WS_HEARTBEAT_CHECK_INTERVAL_MILLIS:1000}
+    max-missed-pongs: ${GATEWAY_WS_MAX_MISSED_PONGS:2}
+    max-global-connections: ${GATEWAY_WS_MAX_GLOBAL_CONNECTIONS:10000}
+    max-connections-per-ip: ${GATEWAY_WS_MAX_CONNECTIONS_PER_IP:10}
+    max-connections-per-user: ${GATEWAY_WS_MAX_CONNECTIONS_PER_USER:5}
+    max-connection-attempts-per-minute: ${GATEWAY_WS_MAX_CONNECTION_ATTEMPTS_PER_MINUTE:30}
+    max-messages-per-second: ${GATEWAY_WS_MAX_MESSAGES_PER_SECOND:30}
+    max-subscriptions-per-session: ${GATEWAY_WS_MAX_SUBSCRIPTIONS_PER_SESSION:50}
+    fanout-concurrency: ${GATEWAY_WS_FANOUT_CONCURRENCY:64}
+    redis-market-events:
+      enabled: ${GATEWAY_REDIS_MARKET_EVENTS_ENABLED:false}
+      channel-prefix: ${GATEWAY_REDIS_MARKET_EVENTS_CHANNEL_PREFIX:md:broadcast:}
+    redis-private-events:
+      enabled: ${GATEWAY_REDIS_PRIVATE_EVENTS_ENABLED:false}
+      channel-prefix: ${GATEWAY_REDIS_PRIVATE_EVENTS_CHANNEL_PREFIX:ws:private:}
+  gateway:
+    auth:
+      local-verify-enabled: ${MOCKCOIN_GATEWAY_AUTH_LOCAL_VERIFY_ENABLED:false}
+      jwt-secret: ${MOCKCOIN_GATEWAY_AUTH_JWT_SECRET:}
+      remote-cache-ttl: ${MOCKCOIN_GATEWAY_AUTH_REMOTE_CACHE_TTL:PT30S}
+      remote-cache-max-size: ${MOCKCOIN_GATEWAY_AUTH_REMOTE_CACHE_MAX_SIZE:10000}
+      denylist-redis-enabled: ${MOCKCOIN_GATEWAY_AUTH_DENYLIST_REDIS_ENABLED:${AUTH_DENYLIST_REDIS_ENABLED:false}}
+  security:
+    rate-limit-enabled: ${GATEWAY_RATE_LIMIT_ENABLED:true}
+    ip-requests-per-minute: ${GATEWAY_IP_REQUESTS_PER_MINUTE:100}
+    authenticated-requests-per-minute: ${GATEWAY_AUTHENTICATED_REQUESTS_PER_MINUTE:300}
+    order-requests-per-minute: ${GATEWAY_ORDER_REQUESTS_PER_MINUTE:30}
+    auth-requests-per-window: ${GATEWAY_AUTH_REQUESTS_PER_WINDOW:10}
+    auth-window-seconds: ${GATEWAY_AUTH_WINDOW_SECONDS:60}
+    market-read-requests-per-minute: ${GATEWAY_MARKET_READ_REQUESTS_PER_MINUTE:240}
+    market-candle-requests-per-minute: ${GATEWAY_MARKET_CANDLE_REQUESTS_PER_MINUTE:120}
+    account-read-requests-per-minute: ${GATEWAY_ACCOUNT_READ_REQUESTS_PER_MINUTE:180}
+    profile-write-requests-per-minute: ${GATEWAY_PROFILE_WRITE_REQUESTS_PER_MINUTE:10}
+    nickname-requests-per-minute: ${GATEWAY_NICKNAME_REQUESTS_PER_MINUTE:10}
+    billing-write-requests-per-minute: ${GATEWAY_BILLING_WRITE_REQUESTS_PER_MINUTE:10}
+    iap-requests-per-minute: ${GATEWAY_IAP_REQUESTS_PER_MINUTE:5}
+    reset-requests-per-minute: ${GATEWAY_RESET_REQUESTS_PER_MINUTE:3}
+    admin-auth-requests-per-window: ${GATEWAY_ADMIN_AUTH_REQUESTS_PER_WINDOW:10}
+    admin-auth-window-seconds: ${GATEWAY_ADMIN_AUTH_WINDOW_SECONDS:60}
+    admin-read-requests-per-minute: ${GATEWAY_ADMIN_READ_REQUESTS_PER_MINUTE:120}
+    admin-write-requests-per-minute: ${GATEWAY_ADMIN_WRITE_REQUESTS_PER_MINUTE:30}
+    admin-sensitive-requests-per-minute: ${GATEWAY_ADMIN_SENSITIVE_REQUESTS_PER_MINUTE:5}
+    cors-allowed-origins: ${GATEWAY_CORS_ALLOWED_ORIGINS:https://*.apps.tossmini.com,https://*.private-apps.tossmini.com}
+    require-ssl: ${GATEWAY_REQUIRE_SSL:false}
+    trusted-proxy-cidrs: ${GATEWAY_TRUSTED_PROXY_CIDRS:}
+  admin:
+    enabled: ${GATEWAY_ADMIN_ENABLED:false}
+    internal-token: ${GATEWAY_ADMIN_INTERNAL_TOKEN:}
+    user-service-token: ${USER_SERVICE_ADMIN_INTERNAL_TOKEN:${USER_SERVICE_INTERNAL_TOKEN:}}
+    trading-service-token: ${TRADING_SERVICE_ADMIN_INTERNAL_TOKEN:${TRADING_SERVICE_INTERNAL_TOKEN:}}
+    market-service-token: ${MARKET_SERVICE_INTERNAL_TOKEN:}
+    ingestor-service-token: ${INGESTOR_SERVICE_INTERNAL_TOKEN:}
+    community-service-token: ${COMMUNITY_SERVICE_INTERNAL_TOKEN:}
+    username: ${GATEWAY_ADMIN_USERNAME:}
+    password: ${GATEWAY_ADMIN_PASSWORD:}
+    passkey-enabled: ${GATEWAY_ADMIN_PASSKEY_ENABLED:false}
+
+springdoc:
+  # API 문서(OpenAPI JSON, /v3/api-docs)는 운영에 노출하지 않는다. 로컬 프로필에서만 켜고, 커밋하는 명세 파일은 테스트가 만든다.
+  api-docs:
+    enabled: ${SPRINGDOC_API_DOCS_ENABLED:false}
